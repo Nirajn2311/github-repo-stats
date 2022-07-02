@@ -1,0 +1,7 @@
+{
+  "*.(js|ts|jsx|tsx)": [
+    "eslint --max-warnings=0 --fix .",
+    "prettier --write ."
+  ],
+  "*.!(js|ts|jsx|tsx)": ["prettier --write --ignore-unknown ."]
+}
