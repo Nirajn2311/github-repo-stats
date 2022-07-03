@@ -3,7 +3,7 @@ name: Update repo stats
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */1 * * *'
+    - cron: '58 */1 * * *'
 
 jobs:
   update_data:
