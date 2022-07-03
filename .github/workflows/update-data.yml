@@ -1,0 +1,36 @@
+name: Update repo stats
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'
+
+jobs:
+  update_data:
+    name: Update repo stats
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query GitHub GraphQL API
+        id: GH_AQL_QUERY
+        uses: octokit/graphql-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          query: |
+            query repo_stats($owner: String!, $repo: String!) {
+              repository(owner: $owner, name: $repo) {
+                stargazerCount
+                pullRequests(states: OPEN) {
+                  totalCount
+                }
+                issues(states: OPEN) {
+                  totalCount
+                }
+              }
+            }
+          owner: ${{ secrets.REPOSITORY_OWNER }}
+          repo: ${{ secrets.REPOSITORY_NAME }}
+      - name: Log results
+        run: |
+          echo "Issue count: ${{ steps.GH_AQL_QUERY.outputs.data.issues.totalCount }}"
+          echo "Pull request count: ${{ steps.GH_AQL_QUERY.outputs.data.pullRequests.totalCount }}"
+          echo "Stargazer count: ${{ steps.GH_AQL_QUERY.outputs.data.stargazerCount }}"
