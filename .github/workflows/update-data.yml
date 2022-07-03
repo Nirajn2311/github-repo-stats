@@ -1,8 +1,9 @@
 name: Update repo stats
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: '*/1 * * * *'
+    - cron: '0 */1 * * *'
 
 jobs:
   update_data:
@@ -10,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Query GitHub GraphQL API
-        id: GH_AQL_QUERY
+        id: GH_GQL_QUERY
         uses: octokit/graphql-action@v2.x
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -31,6 +32,6 @@ jobs:
           repo: ${{ secrets.REPOSITORY_NAME }}
       - name: Log results
         run: |
-          echo "Issue count: ${{ steps.GH_AQL_QUERY.outputs.data.issues.totalCount }}"
-          echo "Pull request count: ${{ steps.GH_AQL_QUERY.outputs.data.pullRequests.totalCount }}"
-          echo "Stargazer count: ${{ steps.GH_AQL_QUERY.outputs.data.stargazerCount }}"
+          echo "Issue count: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.issues.totalCount }}"
+          echo "Pull request count: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.pullRequests.totalCount }}"
+          echo "Stargazer count: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.stargazerCount }}"
