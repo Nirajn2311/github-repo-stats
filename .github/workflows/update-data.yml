@@ -35,3 +35,12 @@ jobs:
           echo "Issue count: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.issues.totalCount }}"
           echo "Pull request count: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.pullRequests.totalCount }}"
           echo "Stargazer count: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.stargazerCount }}"
+      - name: Upload data to MongoDB
+        uses: krassdanke/mongosh-command-action@v1.1
+        env:
+          issueCount: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.issues.totalCount }}
+          pullRequestCount: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.pullRequests.totalCount }}
+          stargazerCount: ${{ fromJSON(steps.GH_GQL_QUERY.outputs.data).repository.stargazerCount }}
+        with:
+          connectionString: ${{ secrets.MONGODB_CONNECTION_STRING }}
+          snippet: "let res = db['github-repo-stats'].insertOne({timestamp: new Date(), openIssues: process.env.issueCount, openPrs: process.env.pullRequestCount, stars: process.env.stargazerCount}); console.log(res);"
