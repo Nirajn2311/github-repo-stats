@@ -2,8 +2,8 @@ name: Update repo stats
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '58 */1 * * *'
+  repository_dispatch:
+    types: update_data
 
 jobs:
   update_data:
